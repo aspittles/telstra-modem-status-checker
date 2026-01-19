@@ -1,5 +1,4 @@
-#!/bin/bash
-
+#!/bin/sh
 # Telstra Smart Modem Internet Connection Status Checker
 # Checks every 2.5 minutes, logs every 15 minutes or on status change
 
@@ -19,7 +18,12 @@ LOG_INTERVAL=6  # Log every 6 checks = 15 minutes
 # Function to fetch and log modem status
 check_modem_status() {
     # Fetch the data from the API
-    response=$(curl -s "$API_ENDPOINT")
+    response=$(curl -s --connect-timeout 10 "$API_ENDPOINT")
+
+    # Check if we got a valid response
+    if [ -z "$response" ]; then
+        return
+    fi
 
     # Extract the internet connection status using jq
     internet_status=$(echo "$response" | jq -r '.[0].device.wan_status.status')
@@ -28,22 +32,22 @@ check_modem_status() {
 
     # Check if any status has changed
     status_changed=false
-    if [[ "$internet_status" != "$prev_internet_status" ]] || \\
-       [[ "$connection_type" != "$prev_connection_type" ]] || \\
-       [[ "$ipv4" != "$prev_ipv4" ]]; then
+    if [ "$internet_status" != "$prev_internet_status" ] || \
+       [ "$connection_type" != "$prev_connection_type" ] || \
+       [ "$ipv4" != "$prev_ipv4" ]; then
         status_changed=true
     fi
 
     # Increment check counter
-    ((check_count++))
+    check_count=$((check_count + 1))
 
     # Log if: status changed OR 15-minute interval reached
-    if [[ "$status_changed" == true ]] || [[ $check_count -ge $LOG_INTERVAL ]]; then
+    if [ "$status_changed" = true ] || [ $check_count -ge $LOG_INTERVAL ]; then
         # Get timestamp
         timestamp=$(date '+%Y-%m-%d %H:%M:%S')
 
         # Add change indicator if status changed
-        if [[ "$status_changed" == true ]] && [[ -n "$prev_internet_status" ]]; then
+        if [ "$status_changed" = true ] && [ -n "$prev_internet_status" ]; then
             echo "$timestamp | Internet Connection: $internet_status | Type: $connection_type | IPv4: $ipv4 | [STATUS CHANGED]" >> "$LOG_FILE"
         else
             echo "$timestamp | Internet Connection: $internet_status | Type: $connection_type | IPv4: $ipv4" >> "$LOG_FILE"

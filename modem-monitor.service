@@ -1,11 +1,13 @@
 [Unit]
-Description=Telstra Modem Status Monitor
+Description=Telstra Smart Modem Internet Connection Status Monitor
 After=network-online.target
+Wants=network-online.target
 
 [Service]
-ExecStart=/home/aspittles/Projects/telstra-modem-status-checker/modem-monitor.sh
-Restart=on-failure
-RestartSec=10
+Type=simple
+ExecStart=/bin/sh /home/aspittles/Projects/telstra-modem-status-checker/modem-monitor.sh
+Restart=always
+RestartSec=30
 User=aspittles
 
 [Install]
