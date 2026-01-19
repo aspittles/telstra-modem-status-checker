@@ -13,11 +13,8 @@ It requires curl and jq to be installed
 4. View the log file: `tail -f ~/modem-status.log`
 
 If you want it to run automatically on system startup, create
-
 /etc/systemd/system/modem-monitor.service:
 
 Then enable and start the service:
-
 `sudo systemctl enable modem-monitor.service`
-
 `sudo systemctl start modem-monitor.service`
