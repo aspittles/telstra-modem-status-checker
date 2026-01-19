@@ -15,6 +15,6 @@ It requires curl and jq to be installed
 If you want it to run automatically on system startup, create
 /etc/systemd/system/modem-monitor.service:
 
-Then enable and start the service
-sudo systemctl enable modem-monitor.service
-sudo systemctl start modem-monitor.service
+Then enable and start the service:
+`sudo systemctl enable modem-monitor.service`
+`sudo systemctl start modem-monitor.service`
