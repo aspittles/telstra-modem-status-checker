@@ -1,0 +1,13 @@
+ini[Unit]
+Description=Telstra Modem Status Monitor
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=$HOME/modem-monitor.sh
+Restart=on-failure
+RestartSec=10
+User=aspittles
+
+[Install]
+WantedBy=multi-user.target
